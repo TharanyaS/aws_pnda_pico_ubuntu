@@ -1,6 +1,0 @@
-bastion_private_ip: 172.31.32.129 
-public_ip: 34.207.133.102 
-hadoop-edge_private_ip: 172.31.31.37 
-hadoop-mgr-1_private_ip: 172.31.43.149
-hadoop-dn_private_ip: [172.31.28.42] 
-kafka_private_ip: [172.31.30.207]
