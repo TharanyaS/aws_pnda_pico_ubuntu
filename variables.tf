@@ -105,8 +105,6 @@ variable "branch" {
   default = "release/4.0"
 }
 
-variable "mirror_server_ip" {
-  default = "54.164.235.38/"
-}
+variable "mirror_server_ip" {}
 #availability zones: us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f.
    
