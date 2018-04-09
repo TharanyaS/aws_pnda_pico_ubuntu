@@ -1,0 +1,16 @@
+{
+    "PR_FS_TYPE": "local",
+    "PNDA_APPS_CONTAINER": "tharan-apps",
+    "PNDA_APPS_FOLDER": "releases",
+    "PNDA_APPS_REGION": "us-east-1",
+    "PNDA_ARCHIVE_CONTAINER": "tharan-archive",
+    "PNDA_ARCHIVE_REGION": "us-east-1",
+    "PR_FS_LOCATION_PATH": "/opt/pnda/packages",
+    "PLATFORM_GIT_BRANCH": "4.0",
+    "HADOOP_DISTRO": "HDP",
+    "REJECT_OUTBOUND": "NO",
+    "PNDA_INTERNAL_NETWORK": "eth0",
+    "PNDA_INGEST_NETWORK": "eth0",
+    "ADD_ONLINE_REPOS": "YES",
+    "imageId": "ami-f95ef58a"
+}
