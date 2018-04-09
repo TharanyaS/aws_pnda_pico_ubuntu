@@ -205,47 +205,18 @@ resource "local_file" "cluster_ip" {
   content     = "bastion_private_ip: ${ aws_instance.bastion.private_ip } \npublic_ip: ${ aws_instance.bastion.public_ip } \nhadoop-edge_private_ip: ${ aws_instance.edge.private_ip } \nhadoop-mgr-1_private_ip: ${ aws_instance.mgr-1.private_ip }\nhadoop-dn_private_ip: [${join(",",aws_instance.dn.*.private_ip)}] \nkafka_private_ip: [${join(",", aws_instance.kafka.*.private_ip)}]"
   filename = "${path.cwd}/output.yaml"
 }
-/*
 resource "null_resource" "ansiblerun" {
   depends_on = [
-    "local_file.cluster_ip"
-  ]
-
-  provisioner "local-exec" {
-    command = "python create_pico.py create -f pico -s ${var.ssh_key_name} -b ${var.branch} -i ${var.mirror_server_ip} -d ${var.pnda_variables} -a ${var.access_key} -r ${var.region} -k ${var.secret_key}"
-  }
-}
-*/
-resource "null_resource" "ansiblerun" {
-  depends_on = [
-    "local_file.cluster_ip"
+    "local_file.cluster_ip", "null_resource.install_requirement"
   ]
 
   provisioner "local-exec" {
     command = "python create_pico.py create -b ${var.branch} -u ${var.ssh_user} -s ${var.ssh_key_name} -f pico -i ${var.mirror_server_ip}  -a ${var.access_key} -r ${var.region} -k ${var.secret_key}"
   }
 }
-/*
-resource "null_resource" "createjsonfile" {
-  depends_on = ["aws_instance.bastion", "aws_instance.edge", "aws_instance.mgr-1", "aws_instance.kafka", "aws_instance.dn"]
+resource "null_resource" "install_requirement" {
+  depends_on = ["local_file.cluster_ip"]
   provisioner "local-exec" {
-    command = "python create_pico.py"
+    command = "pip install -r requirements.txt"
   }
 }
-resource "null_resource" "hosts"-cli/ {
-  depends_on = [
-    "null_resource.createjsonfile"]
-  provisioner "local-exec" {
-    command = "echo \"localhost branch=${var.branch} pnda_path=${path.cwd}\n\n\" > hosts"
-}
-}
-
-resource "null_resource" "ansiblerun" {
-  depends_on = [
-    "null_resource.hosts"
-  ]
-
-  provisioner "local-exec" {
-    command = "export ANSIBLE_CONFIG=./ansible/ansible.cfg && export ANSIBLE_HOST_KEY_CHECKING=False && ansible-playbook --extra-vars \"branch=${var.branch} pnda_path=${path.cwd}\" ./ansible/playbook.yml> playbook.log"
-  }
-}*/

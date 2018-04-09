@@ -1,5 +1,4 @@
 import json
-import python_terraform as pt
 import re
 import yaml
 from git import Repo
@@ -141,10 +140,9 @@ def get_args():
 
 def deploy_pnda(args, pnda_path, json_path):
     try:
-        FILE_LOGGER.info("Installing required python packages for PNDA")
-        run_command("pip install -r requirements.txt")
         path = os.path.join(pnda_path, 'cli')
         os.chdir(path)
+        run_command('pip install -r requirements.txt')
         command = 'python pnda-cli.py create -e pnda-ubuntu -s {} -m {} -f pico ' .format(args.keypair, json_path)
         FILE_LOGGER.info(command)
         run_command(command)
