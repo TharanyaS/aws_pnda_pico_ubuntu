@@ -8,7 +8,7 @@ Non-deepinsight users:
 4. Run install_packages.sh to install necessary packages 
 5. Copy the private_key_file to pnda_ubuntu_mirror_server directory
 6. Run "terraform apply" command.
-7. Provide the values for access_key, secret_key and ssh_key_name - Ex: private_key
+7. Provide the values for access_key, secret_key, mirror_ip of ubuntu mirror server and ssh_key_name - Ex: private_key
 
 Deepinsight Users:
 1. Install git 
@@ -19,5 +19,5 @@ Deepinsight Users:
 4. Run install_packages.sh to install necessary packages 
 5. Copy the private_key_file to pnda_ubuntu_mirror_server directory
 6. Run "terraform apply" command.
-7. Provide the values for access_key, secret_key and ssh_key_name - Ex: private_key
+7. Provide the values for access_key, secret_key, mirror_ip of ubuntu mirror server and ssh_key_name - Ex: private_key
 
