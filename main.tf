@@ -205,7 +205,7 @@ resource "local_file" "cluster_ip" {
   content     = "bastion_private_ip: ${ aws_instance.bastion.private_ip } \npublic_ip: ${ aws_instance.bastion.public_ip } \nhadoop-edge_private_ip: ${ aws_instance.edge.private_ip } \nhadoop-mgr-1_private_ip: ${ aws_instance.mgr-1.private_ip }\nhadoop-dn_private_ip: [${join(",",aws_instance.dn.*.private_ip)}] \nkafka_private_ip: [${join(",", aws_instance.kafka.*.private_ip)}]"
   filename = "${path.cwd}/output.yaml"
 }
-resource "null_resource" "ansiblerun" {
+resource "null_resource" "deploy_PNDA" {
   depends_on = [
     "local_file.cluster_ip", "null_resource.install_requirement"
   ]
