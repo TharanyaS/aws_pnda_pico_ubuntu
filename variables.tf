@@ -19,7 +19,9 @@ variable "image_id" {
       "description" = "Image to use for instances"
 }
 
-variable "ssh_key_name" {}
+variable "ssh_key_name" {
+      "default" = "ubuntu_key"
+}
 
 variable "logvolumesize" {
       "type" = "string",
