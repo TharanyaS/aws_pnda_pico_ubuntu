@@ -59,6 +59,7 @@ def clone_git_repo(repo_url, branch):
     os.chdir('pnda-cli')
     run_command("git checkout {0}" .format(branch))
     return path, pnda_path
+
      
 def create_production_json_file(flavor='pico'):
     data = yaml.load(open("output.yaml"))
@@ -89,6 +90,7 @@ def create_production_json_file(flavor='pico'):
         json.dump(output_dict,json_data,sort_keys=True, indent=4)
     return output_file
 
+
 def copy_key_and_json_file(key_name, flavor):
     json_file = '%s.json' % flavor
     shutil.copy(json_file, './pnda-cli/existing-machines/')
@@ -100,6 +102,7 @@ def copy_key_and_json_file(key_name, flavor):
     os.chmod(key_file, 0400)
     return os.path.abspath(file_path)
     
+
 def create_env_file(input_data):
     template_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='./')) 
     template = template_env.get_template("pnda_env.j2")
@@ -115,8 +118,9 @@ def update_pnda_yaml(mirror_ip, access_key, secret_key, region, branch, os_user)
     create_env_file(config_data)
     return None
 
+
 def get_args():
-    epilog = """examples:
+    epilog = """
   - creates pico pnda cluster
     """
 
@@ -138,6 +142,7 @@ def get_args():
     args = parser.parse_args()
     return args
 
+
 def deploy_pnda(args, pnda_path, json_path):
     try:
         path = os.path.join(pnda_path, 'cli')
@@ -149,6 +154,7 @@ def deploy_pnda(args, pnda_path, json_path):
     except Exception as e:
         FILE_LOGGER(str(e))
 
+
 def main():
     args = get_args()
     json_file_name = create_production_json_file()
@@ -157,6 +163,7 @@ def main():
     json_path = copy_key_and_json_file(args.keypair, args.flavor)
     update_pnda_yaml(args.mirror_ip, args.access_key, args.secret_key, args.region, args.branch, args.user)
     deploy_pnda(args, pnda_path, json_path)
+
 
 if __name__ == "__main__":
     try:

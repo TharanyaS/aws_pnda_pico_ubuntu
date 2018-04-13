@@ -7,6 +7,13 @@ variable "region" {
   default = "us-east-1"
 }
 
+variable "ssh_key_name" {
+      "default" = "ubuntu_key"
+}
+
+variable "mirror_server_ip" {
+}
+
 variable "cluster_name" {
       "type" = "string",
       "default" = "pnda-ubuntu",
@@ -17,10 +24,6 @@ variable "image_id" {
       "type" = "string",
       "default" = "ami-a22323d8",
       "description" = "Image to use for instances"
-}
-
-variable "ssh_key_name" {
-      "default" = "ubuntu_key"
 }
 
 variable "logvolumesize" {
@@ -98,9 +101,8 @@ variable "ssh_user" {
 }
 
 variable "branch" {
-  default = "release/4.0"
+      "default" = "release/4.0"
 }
 
-variable "mirror_server_ip" {}
 #availability zones: us-east-1a, us-east-1b, us-east-1c, us-east-1d, us-east-1e, us-east-1f.
    

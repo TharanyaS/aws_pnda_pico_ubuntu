@@ -88,7 +88,7 @@ resource "aws_instance" "kafka" {
   key_name = "${var.ssh_key_name}"
   availability_zone = "${var.awsAvailabilityZone}"
   instance_initiated_shutdown_behavior = "stop"
-  security_groups = ["${aws_security_group.pndaSg.name}", "${aws_security_group.sshSg.name}"]
+  security_groups = ["${aws_security_group.pndaSg.name}", "${aws_security_group.sshSg.name}", "${aws_security_group.kafkaSg.name}"]
   count = "${var.number_of_kafkanodes}"
   monitoring = "false"
   associate_public_ip_address = "false"
