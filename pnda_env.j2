@@ -69,13 +69,13 @@ pnda_application_repo:
   PR_FS_TYPE: {{ PR_FS_TYPE }}
 
   # S3 container to use for PNDA application packages
-  PNDA_APPS_CONTAINER: {{ PNDA_APPS_CONTAINER }}
+  PNDA_APPS_CONTAINER: pnda-apps
 
   # Name of folder within PNDA_APPS_CONTAINER that contains the PNDA application packages
-  PNDA_APPS_FOLDER: {{ PNDA_APPS_FOLDER }}
+  PNDA_APPS_FOLDER: releases
 
   # AWS region that contains the PNDA_APPS_CONTAINER bucket
-  PNDA_APPS_REGION: {{ PNDA_APPS_REGION }}
+  PNDA_APPS_REGION: eu-west-1
 
   # API key for s3 access to PNDA_APPS_CONTAINER. These keys are stored on the cloud instances so should be restricted
   # only allow access to the PNDA_APPS_CONTAINER bucket
@@ -93,10 +93,10 @@ pnda_application_repo:
 
 pnda_data_archive:
   # S3 container to use for archiving PNDA datasets
-  PNDA_ARCHIVE_CONTAINER: {{ PNDA_ARCHIVE_CONTAINER }}
+  PNDA_ARCHIVE_CONTAINER: pnda-archive
 
   # AWS region that contains the PNDA_ARCHIVE_CONTAINER bucket
-  PNDA_ARCHIVE_REGION: {{ PNDA_ARCHIVE_REGION }}
+  PNDA_ARCHIVE_REGION: eu-west-1
 
   # API key for s3 access to PNDA_ARCHIVE_CONTAINER. These keys are stored on the cloud instances so should be restricted
   # only allow access to the PNDA_ARCHIVE_CONTAINER bucket

@@ -10,23 +10,21 @@ Non-deepinsight users:
 4. cd aws_pnda_pico_ubuntu/
 5. Run install_packages.sh to install necessary packages 
 6. Copy the private_key_file to aws_pnda_pico_ubuntu directory
-7. Run "terraform apply" command.
-8. Provide the values for access_key, secret_key, mirror_ip of ubuntu mirror server and ssh_key_name - Ex: private_key
+7. Provide the value of ssh_key_name and mirror_server_ip in terraform.tfvars file
+8. Run "terraform apply" command
+9. Provide the values for access_key, secret_key and region
 Example:
 var.access_key
   Enter a value: xxxx
 
-var.mirror_server_ip
-  Enter a value: 54.12.123.32
-
 var.secret_key
   Enter a value: xxxxxx
 
-var.ssh_key_name
-  Enter a value: private_key
+var.region
+  Enter a value: us-east-1
 
 
-Deepinsigh Users:
+DeepInsight Users:
 1. Install git 
 	Ubuntu: apt-get install -y git
 	RHEL: yum install -y git
@@ -37,18 +35,20 @@ Deepinsigh Users:
 4. cd aws_pnda_pico_ubuntu/
 5. Run install_packages.sh to install necessary packages 
 6. Copy the private_key_file to aws_pnda_pico_ubuntu directory
-7. Run "terraform apply" command.
-8. Provide the values for access_key, secret_key, mirror_ip of ubuntu mirror server and ssh_key_name - Ex: private_key
+7. Provide the value of ssh_key_name and mirror_server_ip in terraform.tfvars file
+8. Run "terraform apply" command.
+9. Provide the values for access_key, secret_key, and region
 Example:
 var.access_key
   Enter a value: xxxx
 
-var.mirror_server_ip
-  Enter a value: 54.12.123.32
-
 var.secret_key
   Enter a value: xxxxxx
 
-var.ssh_key_name
-  Enter a value: private_key
+var.region
+  Enter a value: us-east-1
 
+DeepInsight Users from UI:
+1. Copy private key file to aws_pnda_pico_ubuntu directory
+2. Provide the key_name and mirror_server_ip for ssh_key_name and mirror_server_ip variable respectively in terraform.tfvars file.
+3. Save it and add application from UI.

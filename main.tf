@@ -86,7 +86,6 @@ resource "aws_instance" "kafka" {
   ami           = "${data.aws_ami.ubuntu1404.id}"
   instance_type = "${var.KafkaFlavor}"
   key_name = "${var.ssh_key_name}"
-  availability_zone = "${var.awsAvailabilityZone}"
   instance_initiated_shutdown_behavior = "stop"
   security_groups = ["${aws_security_group.pndaSg.name}", "${aws_security_group.sshSg.name}", "${aws_security_group.kafkaSg.name}"]
   count = "${var.number_of_kafkanodes}"
@@ -149,6 +148,7 @@ resource "aws_security_group" "kafkaSg" {
 }
 
 resource "aws_security_group" "sshSg" {
+  depends_on = [ "null_resource.keypermission" ]
   description = "Access to pnda instances"
 
   ingress {
@@ -206,23 +206,32 @@ resource "aws_security_group" "pndaSg" {
   }
 }
 
+resource "null_resource" "keypermission" {
+  provisioner "local-exec" {
+    command = "chmod 400 ${var.ssh_key_name}.pem"
+  }
+}
+
 resource "local_file" "cluster_ip" {
   depends_on = ["aws_instance.bastion", "aws_instance.edge", "aws_instance.mgr-1", "aws_instance.kafka", "aws_instance.dn"]
   content     = "bastion_private_ip: ${ aws_instance.bastion.private_ip } \npublic_ip: ${ aws_instance.bastion.public_ip } \nhadoop-edge_private_ip: ${ aws_instance.edge.private_ip } \nhadoop-mgr-1_private_ip: ${ aws_instance.mgr-1.private_ip }\nhadoop-dn_private_ip: [${join(",",aws_instance.dn.*.private_ip)}] \nkafka_private_ip: [${join(",", aws_instance.kafka.*.private_ip)}]"
   filename = "${path.cwd}/output.yaml"
 }
+
 resource "null_resource" "deploy_PNDA" {
   depends_on = [
-    "local_file.cluster_ip", "null_resource.install_requirement"
+    "local_file.cluster_ip", "null_resource.install_requirement", "null_resource.keypermission"
   ]
 
   provisioner "local-exec" {
     command = "python create_pico.py create -b ${var.branch} -u ${var.ssh_user} -s ${var.ssh_key_name} -f pico -i ${var.mirror_server_ip}  -a ${var.access_key} -r ${var.region} -k ${var.secret_key}"
   }
 }
+
 resource "null_resource" "install_requirement" {
   depends_on = ["local_file.cluster_ip"]
   provisioner "local-exec" {
     command = "pip install -r requirements.txt"
   }
 }
+

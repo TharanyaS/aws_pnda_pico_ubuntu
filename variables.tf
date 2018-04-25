@@ -4,14 +4,13 @@ variable "secret_key" {}
 
 
 variable "region" {
-  default = "us-east-1"
 }
 
 variable "ssh_key_name" {
-      "default" = "ubuntu_key"
 }
 
 variable "mirror_server_ip" {
+      "type" = "string"
 }
 
 variable "cluster_name" {

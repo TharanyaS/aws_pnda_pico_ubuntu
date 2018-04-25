@@ -1,7 +1,4 @@
 import json
-import re
-import yaml
-from git import Repo
 import subprocess
 import time
 import logging
@@ -9,9 +6,9 @@ import os
 import argparse
 from argparse import RawTextHelpFormatter
 import shutil
-import json
-import jinja2, glob
-
+from git import Repo
+import jinja2
+import yaml
 
 LOGFILE = "infra-log-%s.log" %(str(time.time()))
 CONSOLE_LOGGER = None
@@ -32,36 +29,41 @@ def init_logging():
     CONSOLE_LOGGER.addHandler(logging.StreamHandler())
     CONSOLE_LOGGER.handlers[0].setFormatter(log_formatter)
     CONSOLE_LOGGER.setLevel(logging.getLevelName('DEBUG'))
-
-
 init_logging()
+
+
 def run_command(command):
     try:
-        process = subprocess.Popen(command, stdout=subprocess.PIPE,  shell=True)
+        process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True)
         while True:
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
                 break
             if output:
                 CONSOLE_LOGGER.debug(output.strip())
-        rc = process.poll()
-        return rc
-    except Exception as e:
-        CONSOLE_LOGGER.error(str(e))
+        returncode = process.poll()
+        return returncode
+    except Exception as error:
+        CONSOLE_LOGGER.error(str(error))
 
 
 def clone_git_repo(repo_url, branch):
-    path = os.getcwd()
-    pnda_path = os.path.join(path,'pnda-cli')
+    """Clone pnda-cli git repository and checkout specified branch."""
+
+    current_path = os.getcwd()
+    pnda_path = os.path.join(current_path, 'pnda-cli')
     if os.path.exists(pnda_path):
         shutil.rmtree(pnda_path, ignore_errors=True)
-    p = Repo.clone_from(repo_url, pnda_path)
+    repo = Repo.clone_from(repo_url, pnda_path)
     os.chdir('pnda-cli')
     run_command("git checkout {0}" .format(branch))
-    return path, pnda_path
+    os.chdir(current_path)
+    return pnda_path
 
      
 def create_production_json_file(flavor='pico'):
+    """Create flavor.json file."""
+
     data = yaml.load(open("output.yaml"))
     output_dict = {}
     output_file = "%s.json" %flavor
@@ -76,45 +78,49 @@ def create_production_json_file(flavor='pico'):
         if isinstance(value, (str, unicode)):
             output_dict[node_name] = {}
             if node_name == "hadoop-edge":
-                output_dict[node_name].update({"is_saltmaster":True,"is_console":True})
+                output_dict[node_name].update({"is_saltmaster":True, "is_console":True})
             if node_name == "bastion":
-                output_dict[node_name].update({"is_bastion":True,"public_ip_address":data["public_ip"]})
-            output_dict[node_name]["ip_address"]=value
-            output_dict[node_name]["node_type"]= node_type
-        else: 
-            for i in range(0,len(value)):
+                output_dict[node_name].update({"is_bastion":True, "public_ip_address":data["public_ip"]})
+            output_dict[node_name]["ip_address"] = value
+            output_dict[node_name]["node_type"] = node_type
+        else:
+            for i in range(0, len(value)):
                 output_dict[node_name+"-"+str(i)] = {}
-                output_dict[node_name+"-"+str(i)]["ip_address"]=value[i]
-                output_dict[node_name+"-"+str(i)]["node_type"]= node_type
-    with open(output_file,"w") as json_data:
-        json.dump(output_dict,json_data,sort_keys=True, indent=4)
+                output_dict[node_name+"-"+str(i)]["ip_address"] = value[i]
+                output_dict[node_name+"-"+str(i)]["node_type"] = node_type
+    with open(output_file, "w") as json_data:
+        json.dump(output_dict, json_data, sort_keys=True, indent=4)
     return output_file
 
 
-def copy_key_and_json_file(key_name, flavor):
-    json_file = '%s.json' % flavor
+def copy_key_and_json_file(key_name, json_file):
+    """Copies private_key_file and json file to respective directories."""
+
     shutil.copy(json_file, './pnda-cli/existing-machines/')
-    file_path = os.path.join('./pnda-cli/existing-machines',json_file)
+    file_path = os.path.join('./pnda-cli/existing-machines', json_file)
     key_file = '%s.pem' % key_name
     shutil.copy(key_file, './pnda-cli')
-#    os.chdir('pnda-cli/')
-    key_file = os.path.join('./pnda-cli',key_file)
+    key_file = os.path.join('./pnda-cli', key_file)
     os.chmod(key_file, 0400)
     return os.path.abspath(file_path)
-    
+
 
 def create_env_file(input_data):
-    template_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='./')) 
+    """Update environment file for pnda-cli."""
+
+    template_env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath='./'))
     template = template_env.get_template("pnda_env.j2")
     output = template.render(input_data)
     with open('./pnda-cli/pnda_env.yaml', 'w') as outfile:
         outfile.write(output)
     return None
-    
-    
+
+
 def update_pnda_yaml(mirror_ip, access_key, secret_key, region, branch, os_user):
+    """Update pnda_env.yaml file with user details."""
+
     config_data = json.load(open("input.json"))
-    config_data.update({"mirror_ip": mirror_ip, "access_key": access_key, "secret_key": secret_key, "region":region, "branch": branch, "os_user":os_user})
+    config_data.update({"mirror_ip": mirror_ip, "access_key": access_key, "secret_key": secret_key, "region": region, "branch": branch, "os_user": os_user})
     create_env_file(config_data)
     return None
 
@@ -130,8 +136,8 @@ def get_args():
     parser.add_argument('command', help='Mode of operation',
                         choices=['create'])
     parser.add_argument('-i', '--mirror-ip',
-                             help='Mirror server ip', required=True)
-    parser.add_argument('-b','--branch', help='Branch of pnda-cli to checkout', required=True)
+                        help='Mirror server ip', required=True)
+    parser.add_argument('-b', '--branch', help='Branch of pnda-cli to checkout', required=True)
     parser.add_argument('-a', '--access-key', help='pnda variables to deploy PNDA', required=True)
     parser.add_argument('-r', '--region', help='pnda variables to deploy PNDA', required=True)
     parser.add_argument('-k', '--secret-key', help='pnda variables to deploy PNDA', required=True)
@@ -148,19 +154,18 @@ def deploy_pnda(args, pnda_path, json_path):
         path = os.path.join(pnda_path, 'cli')
         os.chdir(path)
         run_command('pip install -r requirements.txt')
-        command = 'python pnda-cli.py create -e pnda-ubuntu -s {} -m {} -f pico ' .format(args.keypair, json_path)
+        command = 'python pnda-cli.py create -e pnda-ubuntu -s {} -m {} -f {} ' .format(args.keypair, json_path, args.flavor)
         FILE_LOGGER.info(command)
         run_command(command)
-    except Exception as e:
-        FILE_LOGGER(str(e))
+    except Exception as error:
+        FILE_LOGGER(str(error))
 
 
 def main():
     args = get_args()
     json_file_name = create_production_json_file()
-    current_path, pnda_path = clone_git_repo("https://github.com/pndaproject/pnda-cli.git", args.branch)
-    os.chdir(current_path)
-    json_path = copy_key_and_json_file(args.keypair, args.flavor)
+    pnda_path = clone_git_repo("https://github.com/pndaproject/pnda-cli.git", args.branch)
+    json_path = copy_key_and_json_file(args.keypair, json_file_name)
     update_pnda_yaml(args.mirror_ip, args.access_key, args.secret_key, args.region, args.branch, args.user)
     deploy_pnda(args, pnda_path, json_path)
 
