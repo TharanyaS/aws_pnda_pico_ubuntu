@@ -1,3 +1,3 @@
-ssh_key_name =  ""
-mirror_server_ip = ""
+ssh_key_name =  "ubuntu_key"
+mirror_server_ip = "23.20.71.194"
 

@@ -10,7 +10,7 @@ from git import Repo
 import jinja2
 import yaml
 
-LOGFILE = "infra-log-%s.log" %(str(time.time()))
+LOGFILE = "deployment.log"
 CONSOLE_LOGGER = None
 FILE_LOGGER = None
 
@@ -20,14 +20,12 @@ def init_logging():
     global FILE_LOGGER
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     logging.basicConfig(filename=LOGFILE,
-                        level=logging.INFO,
+                        level=logging.INFO, filemode='w',
                         format='%(asctime)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-    log_formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     FILE_LOGGER = logging.getLogger('filelogger')
     FILE_LOGGER.setLevel(logging.getLevelName('DEBUG'))
     CONSOLE_LOGGER = logging.getLogger('consolelogger')
     CONSOLE_LOGGER.addHandler(logging.StreamHandler())
-    CONSOLE_LOGGER.handlers[0].setFormatter(log_formatter)
     CONSOLE_LOGGER.setLevel(logging.getLevelName('DEBUG'))
 init_logging()
 
@@ -155,7 +153,7 @@ def deploy_pnda(args, pnda_path, json_path):
         os.chdir(path)
         run_command('pip install -r requirements.txt')
         command = 'python pnda-cli.py create -e pnda-ubuntu -s {} -m {} -f {} ' .format(args.keypair, json_path, args.flavor)
-        FILE_LOGGER.info(command)
+        FILE_LOGGER.info("Executing pnda-cli.py file")
         run_command(command)
     except Exception as error:
         FILE_LOGGER(str(error))
